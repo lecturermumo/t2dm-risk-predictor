@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>T2DM Risk Predictor</title>
+</head>
+<body>
+    <h2>Enter Patient Data</h2>
+    <form method="POST">
+        {% for field in ['Age', 'BMI', 'Systolic_BP', 'Diastolic_BP', 'Fasting_Glucose',
+                         'Family_History', 'Physical_Activity', 'Alcohol_Use',
+                         'Education_Level', 'Income_Level', 'Smoking',
+                         'Gender', 'Marital_Status', 'Visit_Type', 'Facility_Name'] %}
+            <label>{{ field }}:</label>
+            <input type="text" name="{{ field }}" required><br><br>
+        {% endfor %}
+        <button type="submit">Predict Risk</button>
+    </form>
+</body>
+</html>
