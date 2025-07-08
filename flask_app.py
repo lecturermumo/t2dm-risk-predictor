@@ -6,7 +6,7 @@ import numpy as np
 app = Flask(__name__)
 booster = xgb.Booster()
 booster.load_model("xgboost_model_booster.json")
-
+ 
 def encode_age(age):
     age = int(age)
     if age <= 30:
