@@ -1,6 +1,6 @@
-
 from flask import Flask, render_template, request
 import xgboost as xgb
+import pandas as pd
 import numpy as np
 
 app = Flask(__name__)
@@ -62,7 +62,7 @@ def index():
             bmi_cat = encode_bmi(bmi)
             glucose_cat = encode_glucose(glucose)
 
-            # Other categorical fields (already encoded from dropdown)
+            # Categorical from dropdowns
             family_history = int(request.form["Family_History"])
             physical_activity = int(request.form["Physical_Activity"])
             alcohol_use = int(request.form["Alcohol_Use"])
@@ -70,14 +70,31 @@ def index():
             income = int(request.form["Income_Level"])
             smoking = int(request.form["Smoking"])
 
+            # Final input in correct order
+            feature_names = [
+                "Age", "BMI", "Systolic_BP", "Diastolic_BP", "Fasting_Glucose",
+                "Family_History", "Physical_Activity", "Alcohol_Use",
+                "Education_Level", "Income_Level", "Smoking"
+            ]
+
             features = [age_cat, bmi_cat, systolic, diastolic, glucose_cat,
                         family_history, physical_activity, alcohol_use,
                         education, income, smoking]
 
-            dmatrix = xgb.DMatrix(np.array([features]))
+            # Wrap in DataFrame
+            df = pd.DataFrame([features], columns=feature_names)
+            dmatrix = xgb.DMatrix(df, feature_names=feature_names)
+
+            # Predict
             prob = booster.predict(dmatrix)[0]
             level = categorize_risk(prob)
+
             return render_template("result.html", score=round(prob * 100, 2), level=level)
+
         except Exception as e:
             return f"Error occurred: {e}"
+
     return render_template("form.html")
+
+# Required for some WSGI servers like Gunicorn
+application = app
